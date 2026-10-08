@@ -1,0 +1,447 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Agenda Motor 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: pit-wall timing sheet — a sticky filter bar over a day-by-day list; each row reads like a timing monitor line. */
+:root{
+  --bg:#f3f4f6; --surface:#ffffff; --ink:#15181d; --muted:#5d6470; --line:#dfe2e7;
+  --accent:#d6361f;          /* señal de largada */
+  --mundial:#b58300; --inter:#2a5fd0; --nacional:#0f8a8a;
+  --ok:#1f8a4c; --warn:#b26a00; --chip:#eef0f3;
+  --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#101318; --surface:#181c23; --ink:#e9ecf1; --muted:#9aa2ae; --line:#2a303a;
+  --accent:#ff5a3d; --mundial:#e2b23a; --inter:#6d9cff; --nacional:#3cc4c4;
+  --ok:#4cc782; --warn:#f0a43a; --chip:#222833; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#101318; --surface:#181c23; --ink:#e9ecf1; --muted:#9aa2ae; --line:#2a303a;
+  --accent:#ff5a3d; --mundial:#e2b23a; --inter:#6d9cff; --nacional:#3cc4c4;
+  --ok:#4cc782; --warn:#f0a43a; --chip:#222833; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45;margin:0}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:16px;padding-block:24px 64px}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+header.top{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:16px 24px;padding-bottom:18px;border-bottom:3px solid var(--ink)}
+.brand h1{font-family:var(--f-display);font-weight:800;font-size:clamp(2.2rem,6vw,3.4rem);line-height:.9;letter-spacing:.01em;margin:0;text-transform:uppercase;text-wrap:balance}
+.brand h1 span{color:var(--accent)}
+.brand p{margin:6px 0 0;color:var(--muted);max-width:60ch}
+
+.next{display:grid;gap:2px;min-width:0;background:var(--ink);color:var(--bg);padding:12px 16px;border-radius:4px;max-width:100%}
+.next .lbl{font-family:var(--f-display);font-size:.85rem;letter-spacing:.14em;text-transform:uppercase;opacity:.75}
+.next .nev{font-family:var(--f-display);font-weight:700;font-size:1.3rem;line-height:1.1}
+.next .cd{font-family:var(--f-mono);font-size:1.25rem;font-variant-numeric:tabular-nums;color:var(--accent)}
+
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:12px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.seg{display:flex;flex-wrap:wrap;gap:4px}
+.seg button{font:600 .8rem/1 var(--f-body);letter-spacing:.04em;text-transform:uppercase;padding:8px 11px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.seg button .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
+select,input[type=search]{font:500 .9rem var(--f-body);padding:8px 10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;min-width:0}
+input[type=search]{flex:1 1 180px}
+.bar label.chk{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--muted)}
+
+.note{margin:16px 0 0;font-size:.85rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+
+.month{margin-top:28px}
+.month h2{font-family:var(--f-display);font-weight:800;font-size:1.9rem;text-transform:uppercase;letter-spacing:.02em;margin:0 0 4px;display:flex;align-items:baseline;gap:10px}
+.month h2 small{font:500 .85rem var(--f-body);color:var(--muted);text-transform:none;letter-spacing:0}
+
+.day{display:grid;grid-template-columns:92px 1fr;gap:0 16px;border-top:1px solid var(--line);padding-block:12px}
+.day.today .dlabel .dn{color:var(--accent)}
+.dlabel{font-family:var(--f-display);text-transform:uppercase;line-height:1}
+.dlabel .dw{font-size:.85rem;letter-spacing:.12em;color:var(--muted);font-weight:600}
+.dlabel .dn{font-size:2.3rem;font-weight:800}
+.dlabel .tag{display:inline-block;margin-top:4px;font:700 .65rem var(--f-body);letter-spacing:.1em;background:var(--accent);color:#fff;padding:2px 6px;border-radius:3px}
+.events{display:grid;gap:8px;min-width:0}
+
+.ev{display:grid;grid-template-columns:76px minmax(0,1fr) auto;gap:4px 14px;align-items:start;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--lvl);border-radius:4px;padding:10px 12px}
+.ev[data-lvl="mundial"]{--lvl:var(--mundial)} .ev[data-lvl="inter"]{--lvl:var(--inter)} .ev[data-lvl="nacional"]{--lvl:var(--nacional)}
+.time{font-family:var(--f-mono);font-weight:700;font-size:1.15rem;font-variant-numeric:tabular-nums;line-height:1.2}
+.time small{display:block;font:500 .68rem var(--f-body);color:var(--muted);letter-spacing:.03em;margin-top:2px}
+.time.tbc{font-size:.8rem;color:var(--muted);font-family:var(--f-body);font-weight:600}
+.main{min-width:0}
+.series{font-family:var(--f-display);font-weight:700;font-size:.95rem;letter-spacing:.06em;text-transform:uppercase;color:var(--lvl)}
+.name{font-weight:600;font-size:1.02rem;margin-top:1px}
+.place{color:var(--muted);font-size:.88rem;margin-top:2px}
+.tv{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
+.tv span{font-size:.75rem;font-weight:500;background:var(--chip);padding:3px 7px;border-radius:3px}
+.tv .chk{background:transparent;border:1px dashed var(--line);color:var(--muted)}
+.side{display:grid;gap:6px;justify-items:end;text-align:right}
+.pill{font:700 .66rem var(--f-body);letter-spacing:.08em;text-transform:uppercase;padding:3px 7px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.pill.ok{color:var(--ok)} .pill.tbc{color:var(--warn)}
+.side a{font-size:.78rem;font-weight:600;color:var(--accent);text-decoration:none;white-space:nowrap}
+.side a:hover{text-decoration:underline}
+.extra{font-size:.8rem;color:var(--muted);margin-top:4px}
+
+.empty{padding:40px 0;text-align:center;color:var(--muted)}
+
+section.status{margin-top:40px;border-top:3px solid var(--ink);padding-top:16px}
+section.status h2{font-family:var(--f-display);font-weight:800;font-size:1.6rem;text-transform:uppercase;margin:0 0 10px}
+.stgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.st{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:10px 12px;min-width:0}
+.st b{font-family:var(--f-display);font-size:1.05rem;letter-spacing:.03em;text-transform:uppercase}
+.st p{margin:4px 0 0;font-size:.86rem;color:var(--muted)}
+.sources{margin-top:28px;font-size:.82rem;color:var(--muted)}
+.sources ul{columns:2 260px;padding-left:18px;margin:6px 0 0}
+.sources li{break-inside:avoid;margin-bottom:3px}
+
+@media (max-width:640px){
+  .day{grid-template-columns:1fr;gap:6px}
+  .dlabel{display:flex;align-items:baseline;gap:8px}
+  .dlabel .dn{font-size:1.6rem}
+  .ev{grid-template-columns:64px minmax(0,1fr)}
+  .side{grid-column:1/-1;justify-items:start;text-align:left;grid-auto-flow:column;justify-content:start;align-items:center}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>Agenda <span>Motor</span> 2026</h1>
+      <p>Las carreras que quedan de la temporada: Mundial, internacional y nacional. Fecha, hora, autódromo y dónde verla.</p>
+    </div>
+    <div class="next" id="next" aria-live="polite"></div>
+  </header>
+
+  <div class="bar" role="toolbar" aria-label="Filtros">
+    <div class="seg" id="lvl">
+      <button type="button" data-v="all" aria-pressed="true">Todas</button>
+      <button type="button" data-v="mundial" aria-pressed="false"><i class="dot" style="background:var(--mundial)"></i>Mundial</button>
+      <button type="button" data-v="inter" aria-pressed="false"><i class="dot" style="background:var(--inter)"></i>Internacional</button>
+      <button type="button" data-v="nacional" aria-pressed="false"><i class="dot" style="background:var(--nacional)"></i>Nacional</button>
+    </div>
+    <select id="serie" aria-label="Categoría"></select>
+    <select id="region" aria-label="País o región">
+      <option value="">Todos los países</option>
+    </select>
+    <select id="tz" aria-label="Zona horaria">
+      <option value="America/Argentina/Buenos_Aires">Hora Argentina</option>
+      <option value="local">Mi hora local</option>
+      <option value="UTC">UTC</option>
+    </select>
+    <input type="search" id="q" placeholder="Buscar piloto, circuito, ciudad…" aria-label="Buscar">
+  </div>
+
+  <div class="note">
+    <span class="legend"><span><span class="pill ok">Confirmado</span> fecha y sede oficiales</span></span>
+    <span class="legend"><span><span class="pill tbc">A confirmar</span> falta sede u horario</span></span>
+    <span>Hora "aprox." = horario habitual de la categoría. Verificado el 3 oct 2026.</span>
+  </div>
+
+  <main id="list"></main>
+
+  <section class="status">
+    <h2>Estado de temporadas</h2>
+    <div class="stgrid" id="status"></div>
+  </section>
+
+  <div class="sources">
+    <b>Fuentes oficiales por categoría</b>
+    <ul id="srcs"></ul>
+  </div>
+</div>
+
+<script>
+/* ---------- Categorías ---------- */
+const S = {
+  f1:{n:"Fórmula 1",l:"mundial",t:"Monoplaza",tv:["Fox Sports","Disney+ Premium","F1 TV Pro"],u:"https://www.formula1.com/en/racing/2026"},
+  f2:{n:"Fórmula 2",l:"inter",t:"Monoplaza",tv:["F1 TV Pro","Disney+ Premium"],u:"https://www.fiaformula2.com"},
+  fe:{n:"Fórmula E",l:"mundial",t:"Monoplaza",tv:["App Formula E / YouTube"],chk:1,u:"https://www.fiaformulae.com"},
+  wec:{n:"FIA WEC",l:"mundial",t:"Resistencia",tv:["FIA WEC TV (app)","ESPN / Disney+"],chk:1,u:"https://www.fiawec.com"},
+  imsa:{n:"IMSA WeatherTech",l:"mundial",t:"Resistencia",tv:["IMSA TV en YouTube (fuera de EE.UU.)"],u:"https://www.imsa.com"},
+  igtc:{n:"Intercontinental GT Challenge",l:"mundial",t:"GT",tv:["GT World en YouTube (gratis)"],u:"https://www.intercontinentalgtchallenge.com"},
+  wrc:{n:"WRC",l:"mundial",t:"Rally",tv:["Rally.TV"],u:"https://www.wrc.com"},
+  tcrsa:{n:"TCR South America",l:"inter",t:"Turismo",tv:["YouTube TCR South America"],chk:1,u:"https://www.tcr-worldranking.com"},
+  pcc:{n:"Porsche Cup Brasil",l:"inter",t:"GT",tv:["Band","YouTube Porsche Cup"],chk:1,u:"https://www.porschecupbrasil.com.br"},
+  elms:{n:"European Le Mans Series",l:"inter",t:"Resistencia",tv:["YouTube ELMS (gratis)"],u:"https://www.europeanlemansseries.com"},
+  alms:{n:"Asian / Winter Le Mans Series",l:"inter",t:"Resistencia",tv:["YouTube Asian Le Mans Series"],chk:1,u:"https://www.asianlemansseries.com"},
+  gtwc:{n:"GT World Challenge",l:"inter",t:"GT",tv:["GT World en YouTube (gratis)"],u:"https://www.gt-world-challenge-europe.com"},
+  tc:{n:"Turismo Carretera",l:"nacional",t:"Turismo",tv:["TV Pública","DeporTV","MotorPlay"],u:"https://www.actc.org.ar"},
+  tcp:{n:"TC Pista",l:"nacional",t:"Turismo",tv:["MotorPlay","DeporTV"],chk:1,u:"https://www.actc.org.ar"},
+  tcm:{n:"TC Mouras / TC Pista Mouras",l:"nacional",t:"Turismo",tv:["MotorPlay"],chk:1,u:"https://www.actc.org.ar"},
+  tn:{n:"Turismo Nacional",l:"nacional",t:"Turismo",tv:["Streaming oficial APAT"],chk:1,u:"https://apat.org.ar/carreras/calendario"},
+  tc2000:{n:"TC2000",l:"nacional",t:"Turismo",tv:["eltrece (Carburando)"],chk:1,u:"https://tc2000.com.ar"},
+  top:{n:"Top Race",l:"nacional",t:"Turismo",tv:["Streaming oficial Top Race"],chk:1,u:"https://www.toprace.com.ar/toprace/calendario.html"},
+  rally:{n:"Rally Argentino",l:"nacional",t:"Rally",tv:["Redes oficiales del campeonato"],chk:1,u:""},
+  stock:{n:"Stock Car Pro Series",l:"nacional",t:"Stock",tv:["Band / BandSports (Brasil)","YouTube Stock Car"],chk:1,u:"https://www.stockcar.com.br"},
+  truck:{n:"Copa Truck",l:"nacional",t:"Stock",tv:["Band / Canal Acelerados (Brasil)"],chk:1,u:"https://www.copatruck.com.br"},
+  cup:{n:"NASCAR Cup Series",l:"nacional",t:"Stock",tv:["ESPN / Disney+ (Latam)","NASCAR app"],chk:1,u:"https://www.nascar.com"},
+  xfin:{n:"NASCAR O'Reilly Series (ex Xfinity)",l:"nacional",t:"Stock",tv:["ESPN / Disney+ (Latam)","NASCAR app"],chk:1,u:"https://www.nascar.com"},
+  truckus:{n:"NASCAR Craftsman Trucks",l:"nacional",t:"Stock",tv:["ESPN / Disney+ (Latam)","NASCAR app"],chk:1,u:"https://www.nascar.com"},
+  woo:{n:"World of Outlaws",l:"nacional",t:"Tierra",tv:["DIRTVision"],u:"https://www.woosprint.com"},
+  usac:{n:"USAC",l:"nacional",t:"Tierra",tv:["FloRacing"],u:"https://www.usacracing.com"},
+  sc:{n:"Supercars",l:"nacional",t:"Turismo",tv:["SuperView (streaming internacional)"],u:"https://www.supercars.com"},
+  sgt:{n:"Super GT",l:"nacional",t:"GT",tv:["YouTube oficial Super GT"],chk:1,u:"https://supergt.net"},
+  sf:{n:"Super Formula",l:"nacional",t:"Monoplaza",tv:["SF Go (app oficial)"],chk:1,u:"https://superformula.net"},
+  dtm:{n:"DTM",l:"nacional",t:"GT",tv:["YouTube DTM (internacional)"],u:"https://www.dtm.com"},
+  btcc:{n:"BTCC",l:"nacional",t:"Turismo",tv:["ITVX (Reino Unido)","YouTube BTCC"],chk:1,u:"https://www.btcc.net"},
+};
+
+/* ---------- Carreras ----------
+   d = día de carrera (fecha local del evento), u = largada en UTC (si se conoce),
+   ap = horario aproximado, st: "ok" confirmado / "tbc" falta sede u hora, r = país */
+const E = [
+  // Fórmula 1 (horarios oficiales 2026)
+  {s:"f1",n:"GP de Singapur",d:"2026-10-11",u:"2026-10-11T12:00Z",p:"Marina Bay Street Circuit",c:"Singapur",r:"Singapur",st:"ok"},
+  {s:"f1",n:"GP de Estados Unidos",d:"2026-10-25",u:"2026-10-25T20:00Z",p:"Circuit of the Americas",c:"Austin, Texas",r:"Estados Unidos",st:"ok"},
+  {s:"f1",n:"GP de la Ciudad de México",d:"2026-11-01",u:"2026-11-01T20:00Z",p:"Autódromo Hermanos Rodríguez",c:"Ciudad de México",r:"México",st:"ok"},
+  {s:"f1",n:"GP de São Paulo",d:"2026-11-08",u:"2026-11-08T17:00Z",p:"Autódromo José Carlos Pace (Interlagos)",c:"São Paulo",r:"Brasil",st:"ok"},
+  {s:"f1",n:"GP de Las Vegas",d:"2026-11-21",u:"2026-11-22T04:00Z",p:"Las Vegas Strip Circuit",c:"Las Vegas, Nevada",r:"Estados Unidos",st:"ok",x:"Se corre el sábado a la noche en Las Vegas."},
+  {s:"f1",n:"GP de Qatar",d:"2026-11-29",u:"2026-11-29T16:00Z",p:"Lusail International Circuit",c:"Lusail",r:"Qatar",st:"ok",x:"Sujeto a la situación en Medio Oriente: la F1 tiene un plan B en Europa."},
+  {s:"f1",n:"GP de Abu Dhabi",d:"2026-12-06",u:"2026-12-06T13:00Z",p:"Yas Marina Circuit",c:"Abu Dhabi",r:"Emiratos Árabes",st:"ok",x:"Final de temporada. Sujeto a la situación en Medio Oriente."},
+  // Fórmula 2
+  {s:"f2",n:"Ronda 13 · Qatar (carrera principal)",d:"2026-11-29",p:"Lusail International Circuit",c:"Lusail",r:"Qatar",st:"tbc",x:"Fin de semana 27–29 nov, telonera de la F1."},
+  {s:"f2",n:"Ronda 14 · Abu Dhabi (final)",d:"2026-12-06",p:"Yas Marina Circuit",c:"Abu Dhabi",r:"Emiratos Árabes",st:"tbc",x:"Fin de semana 4–6 dic, telonera de la F1."},
+  // Fórmula E temporada 13
+  {s:"fe",n:"E-Prix de Jeddah · Ronda 1 (debut Gen4)",d:"2026-12-18",p:"Jeddah Corniche Circuit",c:"Jeddah",r:"Arabia Saudita",st:"tbc"},
+  {s:"fe",n:"E-Prix de Jeddah · Ronda 2",d:"2026-12-19",p:"Jeddah Corniche Circuit",c:"Jeddah",r:"Arabia Saudita",st:"tbc"},
+  // WEC (Qatar y Bahréin reemplazados)
+  {s:"wec",n:"8 Horas de Barcelona",d:"2026-10-18",p:"Circuit de Barcelona-Catalunya",c:"Montmeló",r:"España",st:"tbc",x:"Reemplaza a las 1812 km de Qatar. Primera edición."},
+  {s:"wec",n:"8 Horas de Monza (final)",d:"2026-11-08",p:"Autodromo Nazionale Monza",c:"Monza",r:"Italia",st:"tbc",x:"Reemplaza a las 8 Horas de Bahréin."},
+  // IMSA
+  {s:"imsa",n:"Motul Petit Le Mans (10 horas, final)",d:"2026-10-03",u:"2026-10-03T16:10Z",p:"Michelin Raceway Road Atlanta",c:"Braselton, Georgia",r:"Estados Unidos",st:"ok"},
+  // IGTC + GTWC America
+  {s:"igtc",n:"Indianapolis 8 Hour (final)",d:"2026-10-10",p:"Indianapolis Motor Speedway (circuito mixto)",c:"Indianápolis",r:"Estados Unidos",st:"tbc",x:"Cierra también el GT World Challenge America."},
+  // WRC
+  {s:"wrc",n:"Rally Italia Sardegna (final de temporada)",d:"2026-10-04",p:"Cerdeña, base en Olbia",c:"Olbia",r:"Italia",st:"ok",x:"Rally del 1 al 4 oct; el domingo se corre la Power Stage. Arabia Saudita salió del calendario."},
+  // TCR South America
+  {s:"tcrsa",n:"Fecha 8",d:"2026-10-04",p:"Sede a confirmar",c:"",r:"Argentina",st:"tbc",x:"Fin de semana 3–4 oct."},
+  {s:"tcrsa",n:"Fecha 9 · Rosario",d:"2026-11-08",p:"Autódromo Juan Manuel Fangio",c:"Rosario, Santa Fe",r:"Argentina",st:"ok",x:"Fin de semana 7–8 nov."},
+  {s:"tcrsa",n:"Fecha 10 · El Pinar (final)",d:"2026-12-06",p:"Autódromo Víctor Borrat Fabini",c:"El Pinar, Canelones",r:"Uruguay",st:"ok",x:"Primera definición del campeonato en Uruguay."},
+  // Porsche Cup Brasil
+  {s:"pcc",n:"Telonera del GP de São Paulo de F1",d:"2026-11-07",p:"Autódromo José Carlos Pace (Interlagos)",c:"São Paulo",r:"Brasil",st:"tbc"},
+  {s:"pcc",n:"Final de temporada",d:"2026-11-28",p:"Autódromo José Carlos Pace (Interlagos)",c:"São Paulo",r:"Brasil",st:"tbc"},
+  // ELMS
+  {s:"elms",n:"4 Horas de Portimão (final)",d:"2026-10-10",p:"Autódromo Internacional do Algarve",c:"Portimão",r:"Portugal",st:"ok"},
+  // Asian / Winter LMS
+  {s:"alms",n:"Rondas 1 y 2 · Paul Ricard",d:"2026-11-14",e:"2026-11-15",p:"Circuit Paul Ricard",c:"Le Castellet",r:"Francia",st:"tbc",x:"Por el conflicto en Medio Oriente, la temporada 2026/27 se corre en Europa."},
+  // GT World Challenge
+  {s:"gtwc",n:"Europe Sprint · Barcelona",d:"2026-10-04",p:"Circuit de Barcelona-Catalunya",c:"Montmeló",r:"España",st:"ok"},
+  {s:"gtwc",n:"Asia · Beijing Street Circuit",d:"2026-10-04",p:"Circuito callejero de Beijing",c:"Beijing",r:"China",st:"ok",x:"Fin de semana 3–4 oct."},
+  {s:"gtwc",n:"Europe Endurance · 3 Horas de Portimão (final)",d:"2026-10-18",p:"Autódromo Internacional do Algarve",c:"Portimão",r:"Portugal",st:"ok"},
+  {s:"gtwc",n:"Asia · Shanghái (final)",d:"2026-11-01",p:"Shanghai International Circuit",c:"Shanghái",r:"China",st:"ok",x:"Fin de semana 31 oct – 1 nov."},
+  {s:"gtwc",n:"Australia · Adelaide (final)",d:"2026-12-06",p:"Adelaide Street Circuit",c:"Adelaide",r:"Australia",st:"ok",x:"Telonera del Grand Final de Supercars (3–6 dic)."},
+  // Turismo Carretera · Copa de Oro
+  {s:"tc",n:"Copa de Oro · Fecha 12 · San Nicolás",d:"2026-10-04",u:"2026-10-04T16:00Z",ap:1,p:"Autódromo Ciudad de San Nicolás",c:"San Nicolás, Buenos Aires",r:"Argentina",st:"ok"},
+  {s:"tc",n:"Copa de Oro · Fecha 13 · Rosario",d:"2026-10-25",u:"2026-10-25T16:00Z",ap:1,p:"Autódromo Juan Manuel Fangio",c:"Rosario, Santa Fe",r:"Argentina",st:"ok",x:"El TC vuelve a Rosario por primera vez desde 2019."},
+  {s:"tc",n:"Copa de Oro · Fecha 14 · Río Cuarto",d:"2026-11-15",u:"2026-11-15T16:00Z",ap:1,p:"Autódromo Parque Ciudad de Río Cuarto",c:"Río Cuarto, Córdoba",r:"Argentina",st:"ok"},
+  {s:"tc",n:"Gran Premio Coronación · La Plata",d:"2026-12-06",u:"2026-12-06T16:00Z",ap:1,p:"Autódromo Roberto Mouras",c:"La Plata, Buenos Aires",r:"Argentina",st:"ok",x:"Define el campeón 2026."},
+  // TC Pista (corre junto al TC)
+  {s:"tcp",n:"San Nicolás",d:"2026-10-04",p:"Autódromo Ciudad de San Nicolás",c:"San Nicolás, Buenos Aires",r:"Argentina",st:"tbc",x:"Corre en el mismo fin de semana que el TC."},
+  {s:"tcp",n:"Rosario",d:"2026-10-25",p:"Autódromo Juan Manuel Fangio",c:"Rosario, Santa Fe",r:"Argentina",st:"tbc",x:"Corre en el mismo fin de semana que el TC."},
+  {s:"tcp",n:"Río Cuarto",d:"2026-11-15",p:"Autódromo Parque Ciudad de Río Cuarto",c:"Río Cuarto, Córdoba",r:"Argentina",st:"tbc",x:"Corre en el mismo fin de semana que el TC."},
+  {s:"tcp",n:"Coronación · La Plata",d:"2026-12-06",p:"Autódromo Roberto Mouras",c:"La Plata, Buenos Aires",r:"Argentina",st:"tbc",x:"Corre en el mismo fin de semana que el TC."},
+  // TC Mouras / TC Pista Mouras
+  {s:"tcm",n:"Instancia final · La Plata",d:"2026-11-29",p:"Autódromo Roberto Mouras",c:"La Plata, Buenos Aires",r:"Argentina",st:"tbc"},
+  {s:"tcm",n:"Definición del campeonato · La Plata",d:"2026-12-06",p:"Autódromo Roberto Mouras",c:"La Plata, Buenos Aires",r:"Argentina",st:"tbc",x:"Junto al Gran Premio Coronación del TC."},
+  // Turismo Nacional
+  {s:"tn",n:"Fecha 10 · Clase 2 y 3",d:"2026-10-11",p:"Autódromo Ciudad de San Martín",c:"San Martín, Mendoza",r:"Argentina",st:"ok"},
+  {s:"tn",n:"Fecha 11 · Clase 2 y 3",d:"2026-11-01",p:"Autódromo Ciudad de Concordia",c:"Concordia, Entre Ríos",r:"Argentina",st:"ok"},
+  {s:"tn",n:"Fecha 12 · Clase 2 y 3 (final)",d:"2026-11-29",p:"Autódromo Ciudad de Viedma",c:"Viedma, Río Negro",r:"Argentina",st:"ok"},
+  // TC2000
+  {s:"tc2000",n:"Fecha 9 · La Pampa",d:"2026-10-11",p:"Autódromo Provincia de La Pampa",c:"Toay, La Pampa",r:"Argentina",st:"ok"},
+  {s:"tc2000",n:"Fecha 10",d:"2026-11-01",p:"Sede a confirmar",c:"",r:"Argentina",st:"tbc"},
+  {s:"tc2000",n:"Fecha 11",d:"2026-11-22",p:"Sede a confirmar",c:"",r:"Argentina",st:"tbc"},
+  {s:"tc2000",n:"Fecha 12 (final)",d:"2026-12-13",p:"Sede a confirmar",c:"",r:"Argentina",st:"tbc"},
+  // Top Race
+  {s:"top",n:"Fecha 9",d:"2026-11-01",p:"Sede a confirmar",c:"",r:"Argentina",st:"tbc"},
+  {s:"top",n:"Fecha 10 (final)",d:"2026-12-13",p:"Sede a confirmar",c:"",r:"Argentina",st:"tbc"},
+  // Rally Argentino
+  {s:"rally",n:"Gran Premio final (tres etapas)",d:"2026-10-17",e:"2026-10-20",p:"Sede a confirmar",c:"",r:"Argentina",st:"tbc",x:"Las dos últimas fechas se unificaron en un solo Gran Premio con puntaje especial."},
+  // Stock Car Brasil
+  {s:"stock",n:"Etapa 10 · Endurance 3 horas",d:"2026-10-18",p:"Autódromo Internacional Ayrton Senna",c:"Goiânia, Goiás",r:"Brasil",st:"ok"},
+  {s:"stock",n:"Etapa 11",d:"2026-11-15",p:"Velopark",c:"Nova Santa Rita, Rio Grande do Sul",r:"Brasil",st:"ok"},
+  {s:"stock",n:"Etapa 12 · Super Final",d:"2026-12-13",p:"Autódromo José Carlos Pace (Interlagos)",c:"São Paulo",r:"Brasil",st:"ok"},
+  // Copa Truck
+  {s:"truck",n:"Etapa 8",d:"2026-11-01",p:"Autódromo de Chapecó",c:"Chapecó, Santa Catarina",r:"Brasil",st:"ok"},
+  {s:"truck",n:"Etapa 9 (final)",d:"2026-11-29",p:"Autódromo Internacional Nelson Piquet",c:"Brasilia",r:"Brasil",st:"ok"},
+  // NASCAR
+  {s:"cup",n:"Playoffs · Las Vegas",d:"2026-10-04",u:"2026-10-04T21:30Z",p:"Las Vegas Motor Speedway",c:"Las Vegas, Nevada",r:"Estados Unidos",st:"ok"},
+  {s:"cup",n:"Playoffs · Charlotte Roval",d:"2026-10-11",u:"2026-10-11T19:00Z",p:"Charlotte Motor Speedway (Roval)",c:"Concord, Carolina del Norte",r:"Estados Unidos",st:"ok"},
+  {s:"cup",n:"Playoffs · Phoenix (Ronda de 8)",d:"2026-10-18",u:"2026-10-18T19:00Z",p:"Phoenix Raceway",c:"Avondale, Arizona",r:"Estados Unidos",st:"ok"},
+  {s:"cup",n:"Playoffs · Talladega",d:"2026-10-25",u:"2026-10-25T18:00Z",p:"Talladega Superspeedway",c:"Talladega, Alabama",r:"Estados Unidos",st:"ok"},
+  {s:"cup",n:"Playoffs · Martinsville",d:"2026-11-01",u:"2026-11-01T19:00Z",p:"Martinsville Speedway",c:"Ridgeway, Virginia",r:"Estados Unidos",st:"ok"},
+  {s:"cup",n:"Carrera por el Campeonato",d:"2026-11-08",u:"2026-11-08T20:00Z",p:"Homestead-Miami Speedway",c:"Homestead, Florida",r:"Estados Unidos",st:"ok"},
+  {s:"xfin",n:"Carrera por el Campeonato",d:"2026-11-07",p:"Homestead-Miami Speedway",c:"Homestead, Florida",r:"Estados Unidos",st:"tbc",x:"Corre el argentino Baltazar Leguizamón en la categoría."},
+  {s:"truckus",n:"Carrera por el Campeonato",d:"2026-11-06",p:"Homestead-Miami Speedway",c:"Homestead, Florida",r:"Estados Unidos",st:"tbc"},
+  {s:"woo",n:"World Finals",d:"2026-11-01",e:"2026-11-04",p:"The Dirt Track at Charlotte",c:"Concord, Carolina del Norte",r:"Estados Unidos",st:"tbc",x:"Fechas según el anuncio de la serie; confirmá en el sitio oficial."},
+  {s:"usac",n:"Sprint · Western World Championships (final)",d:"2026-10-23",e:"2026-10-24",p:"Central Arizona Raceway",c:"Casa Grande, Arizona",r:"Estados Unidos",st:"ok"},
+  {s:"usac",n:"Midget · Turkey Night Grand Prix (final)",d:"2026-11-28",p:"Ventura Raceway",c:"Ventura, California",r:"Estados Unidos",st:"ok"},
+  // Supercars
+  {s:"sc",n:"Repco Bathurst 1000",d:"2026-10-11",u:"2026-10-11T00:15Z",ap:1,p:"Mount Panorama",c:"Bathurst, Nueva Gales del Sur",r:"Australia",st:"ok",x:"En Argentina larga el sábado 10 a la noche."},
+  {s:"sc",n:"Finals · Gold Coast 500",d:"2026-10-25",p:"Surfers Paradise Street Circuit",c:"Gold Coast, Queensland",r:"Australia",st:"tbc",x:"Fin de semana 23–25 oct. Arranca la definición entre los 10 mejores."},
+  {s:"sc",n:"Finals · Sandown 500",d:"2026-11-15",p:"Sandown Raceway",c:"Melbourne, Victoria",r:"Australia",st:"tbc",x:"Fin de semana 13–15 nov."},
+  {s:"sc",n:"Finals · Adelaide Grand Final",d:"2026-12-06",p:"Adelaide Street Circuit",c:"Adelaide",r:"Australia",st:"tbc",x:"Fin de semana 3–6 dic."},
+  // Japón
+  {s:"sgt",n:"Autopolis",d:"2026-10-18",p:"Autopolis",c:"Hita, Ōita",r:"Japón",st:"ok"},
+  {s:"sgt",n:"Motegi · carrera extra + 300 km final",d:"2026-11-07",e:"2026-11-08",p:"Mobility Resort Motegi",c:"Motegi, Tochigi",r:"Japón",st:"ok"},
+  {s:"sf",n:"Suzuka · doble carrera final",d:"2026-11-21",e:"2026-11-22",p:"Suzuka Circuit",c:"Suzuka, Mie",r:"Japón",st:"ok"},
+  // Europa
+  {s:"dtm",n:"Final · Hockenheim",d:"2026-10-10",e:"2026-10-11",p:"Hockenheimring Baden-Württemberg",c:"Hockenheim",r:"Alemania",st:"ok",x:"Dos carreras, sábado y domingo."},
+  {s:"btcc",n:"Final · Rondas 28, 29 y 30",d:"2026-10-11",p:"Brands Hatch (trazado GP)",c:"Kent, Inglaterra",r:"Reino Unido",st:"ok"},
+];
+
+const STATUS = [
+  ["IndyCar Series","Temporada 2026 terminada a principios de septiembre. La 2027 arranca en marzo; las 500 Millas de Indianápolis son en mayo."],
+  ["Fórmula E","Temporada 12 terminada en agosto (Londres). La temporada 13, con el auto Gen4, empieza el 18 de diciembre en Jeddah (ya está en la agenda)."],
+  ["Fórmula 3","Temporada terminada: la última fecha fue en Madrid, en septiembre, junto al GP de España."],
+  ["World Rallycross","No hay Mundial en 2026: la FIA lo canceló después de 2025. El Europeo de Rallycross terminó el 13 de septiembre en Lousada (Portugal)."],
+  ["WRC","Cerdeña (1–4 oct) pasó a ser la última fecha: el Rally de Arabia Saudita se canceló y el campeonato quedó en 13 rondas."],
+  ["FIA WEC","Qatar y Bahréin se cancelaron por la situación en Medio Oriente. Los reemplazan Barcelona (18 oct) y Monza (8 nov)."],
+  ["Fórmula 4 Sudamericana","No encontré un calendario oficial 2026 publicado. Si tenés el link de la categoría, lo sumo."],
+  ["NASCAR O'Reilly y Trucks","En la agenda solo figuran las finales en Homestead; las fechas previas de playoffs están en nascar.com."],
+];
+
+/* ---------- Render ---------- */
+const $ = s => document.querySelector(s);
+const state = {lvl:"all", serie:"", region:"", tz:"America/Argentina/Buenos_Aires", q:""};
+try{ const saved = JSON.parse(localStorage.getItem("agendaMotor")||"{}"); Object.assign(state, saved, {q:""}); }catch(e){}
+function save(){ try{ localStorage.setItem("agendaMotor", JSON.stringify({lvl:state.lvl,serie:state.serie,region:state.region,tz:state.tz})); }catch(e){} }
+
+const LV = {mundial:"Mundial", inter:"Internacional", nacional:"Nacional"};
+const tzOpt = () => state.tz==="local" ? {} : {timeZone:state.tz};
+const tzName = () => state.tz==="local" ? "tu hora" : state.tz==="UTC" ? "UTC" : "hora ARG";
+
+// Sort key: start in UTC if known; otherwise midday of race day
+const key = e => e.u ? Date.parse(e.u) : Date.parse(e.d+"T15:00Z");
+// Date shown for grouping: if start time known, the race day in the chosen zone; else the event date
+function dayOf(e){
+  if(!e.u) return e.d;
+  const f = new Intl.DateTimeFormat("en-CA",{...tzOpt(),year:"numeric",month:"2-digit",day:"2-digit"});
+  return f.format(new Date(e.u));
+}
+function hhmm(iso){ return new Intl.DateTimeFormat("es-AR",{...tzOpt(),hour:"2-digit",minute:"2-digit",hour12:false}).format(new Date(iso)); }
+const endOf = e => Date.parse((e.e||e.d)+"T23:59:59-12:00"); // last moment the event could still be running anywhere
+
+function gcal(e){
+  const ser = S[e.s].n, txt = encodeURIComponent(`${ser} · ${e.n}`);
+  let dates;
+  if(e.u){
+    const a = new Date(e.u), b = new Date(a.getTime()+2*3600e3);
+    const z = d => d.toISOString().replace(/[-:]/g,"").replace(/\.\d{3}/,"");
+    dates = `${z(a)}/${z(b)}`;
+  } else {
+    const a = (e.d).replace(/-/g,""); const last = new Date((e.e||e.d)+"T00:00Z"); last.setUTCDate(last.getUTCDate()+1);
+    dates = `${a}/${last.toISOString().slice(0,10).replace(/-/g,"")}`;
+  }
+  const loc = encodeURIComponent([e.p,e.c,e.r].filter(Boolean).join(", "));
+  const det = encodeURIComponent("Dónde verla: "+S[e.s].tv.join(", "));
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${txt}&dates=${dates}&location=${loc}&details=${det}`;
+}
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function filtered(){
+  const now = Date.now(), q = state.q.trim().toLowerCase();
+  return E.filter(e=>{
+    const s = S[e.s];
+    if(endOf(e) < now) return false;
+    if(state.lvl!=="all" && s.l!==state.lvl) return false;
+    if(state.serie && e.s!==state.serie) return false;
+    if(state.region && e.r!==state.region) return false;
+    if(q && !(`${s.n} ${e.n} ${e.p} ${e.c} ${e.r} ${s.tv.join(" ")}`.toLowerCase().includes(q))) return false;
+    return true;
+  }).sort((a,b)=>key(a)-key(b));
+}
+
+function render(){
+  const list = filtered(), out = $("#list");
+  if(!list.length){ out.innerHTML = `<p class="empty">No hay carreras con estos filtros. Probá con "Todas" o borrá la búsqueda.</p>`; return; }
+  const todayStr = new Intl.DateTimeFormat("en-CA",{...tzOpt(),year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
+  const byDay = new Map();
+  list.forEach(e=>{ const d = dayOf(e); if(!byDay.has(d)) byDay.set(d,[]); byDay.get(d).push(e); });
+  const days = [...byDay.keys()].sort();
+  let html = "", curMonth = "";
+  for(const d of days){
+    const dt = new Date(d+"T12:00Z");
+    const m = d.slice(0,7);
+    if(m!==curMonth){
+      if(curMonth) html += `</section>`;
+      const count = days.filter(x=>x.startsWith(m)).reduce((n,x)=>n+byDay.get(x).length,0);
+      const mName = new Intl.DateTimeFormat("es-AR",{month:"long",timeZone:"UTC"}).format(dt);
+      html += `<section class="month"><h2>${mName} <small>${count} ${count===1?"carrera":"carreras"}</small></h2>`;
+      curMonth = m;
+    }
+    const wd = new Intl.DateTimeFormat("es-AR",{weekday:"short",timeZone:"UTC"}).format(dt).replace(".","");
+    const isToday = d===todayStr;
+    html += `<div class="day${isToday?" today":""}"><div class="dlabel"><div class="dw">${wd}</div><div class="dn">${dt.getUTCDate()}</div>${isToday?'<span class="tag">HOY</span>':""}</div><div class="events">`;
+    for(const e of byDay.get(d)){
+      const s = S[e.s];
+      const time = e.u
+        ? `<div class="time">${hhmm(e.u)}<small>${e.ap?"aprox. · ":""}${tzName()}</small></div>`
+        : `<div class="time tbc">Hora a confirmar</div>`;
+      const range = e.e ? ` · hasta el ${new Date(e.e+"T12:00Z").getUTCDate()}/${+e.e.slice(5,7)}` : "";
+      const place = [e.p, e.c, e.r].filter(Boolean).map(esc).join(" · ");
+      html += `<article class="ev" data-lvl="${s.l}">
+        ${time}
+        <div class="main">
+          <div class="series">${esc(s.n)}</div>
+          <div class="name">${esc(e.n)}${range}</div>
+          <div class="place">${place}</div>
+          <div class="tv">${s.tv.map(t=>`<span>${esc(t)}</span>`).join("")}${s.chk?'<span class="chk" title="La señal puede variar según el país o tu proveedor">verificar señal</span>':""}</div>
+          ${e.x?`<div class="extra">${esc(e.x)}</div>`:""}
+        </div>
+        <div class="side">
+          <span class="pill ${e.st==="ok"?"ok":"tbc"}">${e.st==="ok"?"Confirmado":"A confirmar"}</span>
+          <a href="${gcal(e)}" target="_blank" rel="noopener">+ Agendar</a>
+        </div>
+      </article>`;
+    }
+    html += `</div></div>`;
+  }
+  out.innerHTML = html + `</section>`;
+}
+
+function renderNext(){
+  const now = Date.now();
+  const up = E.filter(e=>e.u && Date.parse(e.u) > now - 2*3600e3).sort((a,b)=>Date.parse(a.u)-Date.parse(b.u))[0];
+  const box = $("#next");
+  if(!up){ box.hidden = true; return; }
+  const diff = Date.parse(up.u) - now;
+  let cd;
+  if(diff <= 0) cd = "En pista ahora";
+  else { const dd=Math.floor(diff/864e5), hh=Math.floor(diff%864e5/36e5), mm=Math.floor(diff%36e5/6e4);
+    cd = (dd?`${dd}d `:"") + `${String(hh).padStart(2,"0")}h ${String(mm).padStart(2,"0")}m`; }
+  const day = new Intl.DateTimeFormat("es-AR",{...tzOpt(),weekday:"long",day:"numeric",month:"short"}).format(new Date(up.u));
+  box.innerHTML = `<span class="lbl">Próxima largada</span><span class="nev">${esc(S[up.s].n)} · ${esc(up.n)}</span><span>${day} · ${hhmm(up.u)} ${tzName()}</span><span class="cd">${cd}</span>`;
+}
+
+function setup(){
+  // series select grouped by level
+  const sel = $("#serie");
+  let h = `<option value="">Todas las categorías</option>`;
+  for(const l of ["mundial","inter","nacional"]){
+    h += `<optgroup label="${LV[l]}">` + Object.entries(S).filter(([,s])=>s.l===l).map(([k,s])=>`<option value="${k}">${esc(s.n)}</option>`).join("") + `</optgroup>`;
+  }
+  sel.innerHTML = h;
+  const regions = [...new Set(E.map(e=>e.r))].sort((a,b)=>a.localeCompare(b,"es"));
+  $("#region").innerHTML += regions.map(r=>`<option>${esc(r)}</option>`).join("");
+  sel.value = state.serie; $("#region").value = state.region; $("#tz").value = state.tz;
+  document.querySelectorAll("#lvl button").forEach(b=>{
+    b.setAttribute("aria-pressed", b.dataset.v===state.lvl);
+    b.onclick = ()=>{ state.lvl=b.dataset.v; document.querySelectorAll("#lvl button").forEach(x=>x.setAttribute("aria-pressed", x===b)); save(); render(); };
+  });
+  sel.onchange = e=>{ state.serie=e.target.value; save(); render(); };
+  $("#region").onchange = e=>{ state.region=e.target.value; save(); render(); };
+  $("#tz").onchange = e=>{ state.tz=e.target.value; save(); render(); renderNext(); };
+  $("#q").oninput = e=>{ state.q=e.target.value; render(); };
+
+  $("#status").innerHTML = STATUS.map(([t,p])=>`<div class="st"><b>${esc(t)}</b><p>${esc(p)}</p></div>`).join("");
+  const seen = new Set();
+  $("#srcs").innerHTML = Object.values(S).filter(s=>s.u && !seen.has(s.u) && seen.add(s.u)).map(s=>`<li><a href="${s.u}" target="_blank" rel="noopener">${esc(s.n)}</a></li>`).join("");
+}
+
+setup(); render(); renderNext();
+setInterval(renderNext, 30e3);
+</script>
+
+</body></html>

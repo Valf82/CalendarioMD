@@ -1,0 +1,38 @@
+# Actualiza posiciones y telemetría desde las fuentes oficiales y publica los JSON en data/.
+# La app los lee desde https://raw.githubusercontent.com/<usuario>/<repo>/main/data (ver src/config.ts).
+name: Actualizar datos
+
+on:
+  schedule:
+    - cron: '0 10 * * *'   # todos los días a las 7:00 de Argentina
+    - cron: '0 1 * * 1'    # y el lunes a la madrugada, después de las carreras del domingo
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: datos
+  cancel-in-progress: false
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: pipeline/requirements.txt
+      - run: pip install -r pipeline/requirements.txt
+      - name: Correr el pipeline
+        run: python pipeline/run.py
+      - name: Publicar cambios
+        run: |
+          git config user.name "agenda-motor-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data src/data/generated
+          git diff --cached --quiet || git commit -m "Datos: actualización automática $(date -u +%Y-%m-%d)"
+          git push
